@@ -7,44 +7,56 @@ import java.io.Serializable;
  */
 public final class Event implements Serializable {
 
-    protected Event left = null;
-    protected Event right = null;
-    protected int value;
+    private Event left = null;
+    private Event right = null;
+    private int value;
 
-    protected Event() {
+    Event() {
         value = 0;
     }
 
-    protected Event(int value) {
+    Event(int value) {
         this.value = value;
     }
 
-    protected Event(Event left, Event right, int value) {
+    Event(int value, Event left, Event right) {
         this.value = value;
         this.left = left;
         this.right = right;
+    }
+
+    Event getLeft() {
+        return left;
+    }
+
+    Event getRight() {
+        return right;
+    }
+
+    int getValue() {
+        return value;
     }
 
     protected static Event lift(Event e, int m) {
         if (e.right == null && e.left == null)
             return new Event(e.value + m);
         else
-            return new Event(e.left == null ? null : e.left.clone(),
-                    e.right == null ? null : e.right.clone(), e.value + m);
+            return new Event(e.value + m, e.left == null ? null : e.left, e.right == null ? null : e.right);
     }
 
     protected static Event sink(Event e, int m) {
         if (e.right == null && e.left == null)
             return new Event(e.value - m);
         else
-            return new Event(e.left == null ? null : e.left.clone(),
-                    e.right == null ? null : e.right.clone(), e.value - m);
+            return new Event(e.value - m, e.left == null ? null : e.left, e.right == null ? null : e.right);
     }
 
     protected static int min(Event e) {
         if (e == null)
             return 0;
-        return e.value;
+        if (e.left == null && e.right == null)
+            return e.value;
+        return e.value + Math.min(min(e.left), min(e.right));
     }
 
     protected static int max(Event e) {
@@ -62,55 +74,60 @@ public final class Event implements Serializable {
     public static Event norm(Event e) {
         if (e.left == null && e.right == null)
             return new Event(e.value);
-        else if (e.left != null && e.right != null && e.left.value == e.right.value)
+        if (e.left != null && e.right != null && isValuedOnly(e.left) && isValuedOnly(e.right) &&
+                e.left.value == e.right.value)
             return new Event(e.value + e.left.value);
-        else if (e.left != null && e.right != null) {
+        if (e.left != null && e.right != null) {
             int m = Math.min(min(e.left), min(e.right));
-            return new Event(sink(e.left, m), sink(e.right, m), e.value + m);
+            return new Event(e.value + m, sink(e.left, m), sink(e.right, m));
         }
         throw new RuntimeException("Every node must have either two children or no child.");
     }
 
+    protected static boolean isValuedOnly(Event e) {
+        return e.left == null && e.right == null;
+    }
+
     @SuppressWarnings({"ConstantConditions"})
-    private static boolean InnerLeq(Event e1, Event e2) {
+    private static boolean innerLeq(Event e1, Event e2) {
         if (e1.left == null && e1.right == null)
             return e1.value <= e2.value;
         else if (e2.left == null && e2.right == null)
             return e1.value <= e2.value &&
-                    InnerLeq(lift(e1.left, e1.value), e2) &&
-                    InnerLeq(lift(e1.right, e1.value), e2);
+                    innerLeq(lift(e1.left, e1.value), e2) &&
+                    innerLeq(lift(e1.right, e1.value), e2);
         else if (e1.left != null && e1.right != null && e2.left != null && e2.right != null)
             return e1.value <= e2.value &&
-                    InnerLeq(lift(e1.left, e1.value), lift(e2.left, e2.value)) &&
-                    InnerLeq(lift(e1.right, e1.value), lift(e2.right, e2.value));
+                    innerLeq(lift(e1.left, e1.value), lift(e2.left, e2.value)) &&
+                    innerLeq(lift(e1.right, e1.value), lift(e2.right, e2.value));
         throw new RuntimeException("Every node must have either two children or no child.");
     }
 
     protected static boolean leq(Event e1, Event e2) {
-        return InnerLeq(e1.clone(), e2.clone());
+        return innerLeq(e1, e2);
     }
 
     private static Event innerJoin(Event e1, Event e2) {
         if (e1.right == null && e1.left == null && e2.left == null && e2.right == null)
             return new Event(Math.max(e1.value, e2.value));
         else if (e1.right == null && e1.left == null)
-            return innerJoin(new Event(new Event(0), new Event(0), e1.value) ,e2);
+            return innerJoin(new Event(e1.value, new Event(0), new Event(0)) ,e2);
         else if (e2.left == null && e2.right == null)
-            return innerJoin(e1.clone(), new Event(new Event(0), new Event(0), e2.value));
+            return innerJoin(e1, new Event(e2.value, new Event(0), new Event(0)));
         else if (e1.right != null && e1.left != null && e2.left != null && e2.right != null) {
             if (e1.value > e2.value)
-                return innerJoin(e2.clone(), e1.clone());
+                return innerJoin(e2, e1);
             else {
                 Event left = innerJoin(e1.left ,lift(e2.left ,e2.value - e1.value));
                 Event right = innerJoin(e1.right ,lift(e2.right ,e2.value - e1.value));
-                return norm(new Event(left, right, e1.value));
+                return norm(new Event(e1.value, left, right));
             }
         }
         throw new RuntimeException("Every node must have either two children or no child.");
     }
 
     protected static Event join(Event e1, Event e2) {
-        return innerJoin(e1.clone(), e2.clone());
+        return innerJoin(e1, e2);
     }
 
     @SuppressWarnings({"ConstantConditions", "SimplifiableIfStatement"})
@@ -120,11 +137,11 @@ public final class Event implements Serializable {
         if (!(o instanceof Event))
             return false;
         Event e = (Event) o;
-        if (left == null && right == null && e.left != null && e.right != null )
+        if (left == null && e.left != null && right == null && e.right != null )
             return false;
-        if (left != null && right != null && e.left == null && e.right == null )
+        if (left != null && e.left == null && right != null && e.right == null )
             return false;
-        if (left == null && right == null && e.left == null && e.right == null )
+        if (left == null && e.left == null && right == null && e.right == null )
             return value == e.value;
         if (left != null && right != null && e.left != null && e.right != null )
             return value == e.value && left.equals(e.left) && right.equals(e.right);
@@ -134,9 +151,7 @@ public final class Event implements Serializable {
     public String toString() {
         if (right == null && left == null)
             return String.valueOf(value);
-        return new StringBuilder()
-                .append("(").append(value).append(", ").append(left).append(", ")
-                .append(right).append(")").toString();
+        return "(" + value + ", " + left + ", " + right + ")";
     }
 
     @SuppressWarnings({"ConstantConditions"})

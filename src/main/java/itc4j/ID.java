@@ -7,50 +7,82 @@ import java.io.Serializable;
  */
 public final class ID implements Serializable {
 
-    protected ID left;
-    protected ID right;
+    public static final ID ID_0 = new ID(0);
+    public static final ID ID_1 = new ID(1);
 
-    protected ID() {
+    private ID left;
+    private ID right;
+    private int value = -1;
+
+    private ID(int value) {
+        this.value = value;
     }
 
-    protected ID(ID left, ID right) {
+    ID(ID left, ID right) {
         this.left = left;
         this.right = right;
     }
 
+    public static ID newID_1() {
+        return new ID(1);
+    }
+
+    public static ID newID_0() {
+        return new ID(0);
+    }
+
+    public ID getLeft() {
+        return left;
+    }
+
+    public ID getRight() {
+        return right;
+    }
+
+    @SuppressWarnings("ConstantConditions")
     protected static ID norm(ID id) {
-        if (id.left != null && id.right != null && id.left.left == null && id.left.right == null &&
-                id.right.left == null && id.right.right == null)
-            return new ID();
-        else if (id.left == null && id.right == null)
-            return null;
-        return id.clone();
+        assert id != null;
+        if (id.right != null)
+            id.right = norm(id.right);
+        if (id.left != null)
+            id.left = norm(id.left);
+        if (id.left == null && id.right == null) {
+            if (id.value == 0)
+                return newID_0();
+            if (id.value == 1)
+                return newID_1();
+        }
+        if (id.left.equals(ID_0) && id.right.equals(ID_0))
+            return newID_0();
+        if (id.left.equals(ID_1) && id.right.equals(ID_1))
+            return newID_1();
+        return id;
     }
 
     protected static ID[] split(ID id) {
-        if (id == null)
-            return new ID[]{null, null};
-        else {
-            if (id.left == null && id.right == null)
-                return new ID[]{new ID(new ID(), null), new ID(null, new ID())};
-            else if (id.left == null) {
-                ID[] ids = split(id.right);
-                return new ID[]{new ID(null, ids[0]), new ID(null, ids[1])};
-            } else if (id.right == null) {
-                ID[] ids = split(id.left);
-                return new ID[] {new ID(ids[0], null), new ID(ids[1], null)};
-            } else
-                return new ID[]{new ID(id.left.clone(), null), new ID(null, id.right.clone())};
+        assert id != null;
+        if (id.equals(ID_0))
+            return new ID[]{newID_0(), newID_0()};
+        if (id.equals(ID_1))
+            return new ID[]{new ID(newID_1(), newID_0()), new ID(newID_0(), newID_1())};
+        if (id.left != null && id.left.equals(ID_0)) {
+            ID[] rightSplit = split(id.right);
+            return new ID[]{new ID(newID_0(), rightSplit[0]), new ID(newID_0(), rightSplit[1])};
         }
+        if (id.right != null && id.right.equals(ID_0)) {
+            ID[] leftSplit = split(id.left);
+            return new ID[]{new ID(leftSplit[0], newID_0()), new ID(leftSplit[1], newID_0())};
+        }
+        return new ID[]{new ID(id.left, newID_0()), new ID(newID_0(), id.right)};
     }
 
     protected static ID sum(ID id1, ID id2) {
-        if (id1 == null)
-            return id2 != null ? id2.clone() : id2;
-        else if (id2 == null)
-            return id1.clone();
-        else
-            return norm(new ID(sum(id1.left, id2.left), sum(id1.right, id2.right)));
+        assert id1 != null && id2 != null;
+        if (id1.equals(ID_0))
+            return id2;
+        if (id2.equals(ID_0))
+            return id1;
+        return norm(new ID(sum(id1.left, id2.left), sum(id1.right, id2.right)));
     }
 
     @SuppressWarnings({"ConstantConditions", "SimplifiableIfStatement"})
@@ -62,10 +94,10 @@ public final class ID implements Serializable {
         ID id = (ID) o;
         if ((left == null && id.left != null) || (left != null && id.left == null))
             return false;
-        if ((right != null  && id.right == null) || (right == null  && id.right != null))
+        if ((right != null && id.right == null) || (right == null && id.right != null))
             return false;
         if (left == null && id.left == null && right == null && id.right == null)
-            return true;
+            return value == id.value;
         if (left != null && right != null && id.left != null && id.right != null)
             return left.equals(id.left) && right.equals(id.right);
         return false;
@@ -74,18 +106,17 @@ public final class ID implements Serializable {
     @SuppressWarnings({"ConstantConditions"})
     public String toString() {
         if (left == null && right == null)
-            return "1";
-        else if (left == null && right != null)
+            return String.valueOf(value);
+        if (left.equals(ID_0))
             return "(0, " + right + ")";
-        else if (left != null && right == null)
+        if (right.equals(ID_0))
             return "(" + left + ", 0)";
-        else 
-            return "(" + left + ", " + right + ")";
+        return "(" + left + ", " + right + ")";
     }
 
     @SuppressWarnings({"CloneDoesntCallSuperClone"})
     public ID clone() {
-        ID clone = new ID();
+        ID clone = new ID(value);
         if (right != null)
             clone.right = right.clone();
         if (left != null)
