@@ -21,10 +21,6 @@ public final class Stamp implements Serializable {
         this.event = event;
     }
 
-    public static boolean leq(Stamp s1, Stamp s2) {
-        return Event.leq(s1.event, s2.event);
-    }
-
     static Stamp[] fork(Stamp s) {
         Stamp[] result = new Stamp[2];
         ID[] ids = ID.split(s.id);
@@ -101,18 +97,6 @@ public final class Stamp implements Serializable {
         }
     }
 
-    public Stamp[] send(Stamp s) {
-        return peek(event(s.clone()));
-    }
-
-    public Stamp receive(Stamp s1, Stamp s2) {
-        return event(join(s1.clone(), s2.clone()));
-    }
-
-    public Stamp[] sync(Stamp s1, Stamp s2) {
-        return fork(join(s1.clone(), s2.clone()));
-    }
-
     public String toString() {
         return "(" + id + ", " + event + ")";
     }
@@ -136,4 +120,23 @@ public final class Stamp implements Serializable {
         result = 31 * result + (event != null ? event.hashCode() : 0);
         return result;
     }
+
+    //----------------------------------------- API methods --------------------------------------
+
+    public Stamp[] send(Stamp s) {
+        return peek(event(s.clone()));
+    }
+
+    public Stamp receive(Stamp s1, Stamp s2) {
+        return event(join(s1.clone(), s2.clone()));
+    }
+
+    public Stamp[] sync(Stamp s1, Stamp s2) {
+        return fork(join(s1.clone(), s2.clone()));
+    }
+
+    public static boolean leq(Stamp s1, Stamp s2) {
+        return Event.leq(s1.event, s2.event);
+    }
+
 }
