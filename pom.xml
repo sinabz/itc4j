@@ -6,7 +6,7 @@
 
     <groupId>com.googlecode.itc4j</groupId>
     <artifactId>itc4j</artifactId>
-    <version>1.0</version>
+    <version>0.5.0</version>
     <packaging>jar</packaging>
 
     <developers>
