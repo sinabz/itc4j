@@ -23,7 +23,7 @@ public final class Stamp implements Serializable {
 
     static Stamp[] fork(Stamp s) {
         Stamp[] result = new Stamp[2];
-        ID[] ids = ID.split(s.id);
+        ID[] ids = s.id.split();
         result[0] = new Stamp(ids[0], s.event);
         result[1] = new Stamp(ids[1], s.event);
         return result;
@@ -34,7 +34,7 @@ public final class Stamp implements Serializable {
     }
 
     static Stamp join(Stamp s1, Stamp s2) {
-        return new Stamp(ID.sum(s1.id, s2.id), Event.join(s1.event, s2.event));
+        return new Stamp(s1.id.sum(s2.id), Event.join(s1.event, s2.event));
     }
 
     private static Event fill(ID id, Event event) {
