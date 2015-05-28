@@ -2,7 +2,6 @@ package itc4j;
 
 import org.junit.Test;
 
-import static itc4j.ID.normalize;
 import static org.junit.Assert.*;
 
 /**
@@ -66,24 +65,24 @@ public class IDTest {
 
     @Test
     public void testNormalize() {
-        assertEquals(zero, normalize(zero));
-        assertEquals(one, normalize(one));
+        assertEquals(zero, zero.normalize());
+        assertEquals(one, one.normalize());
         
-        assertEquals(zero, normalize(zeroZero));
-        assertEquals(one, normalize(oneOne));
+        assertEquals(zero, zeroZero.normalize());
+        assertEquals(one, oneOne.normalize());
         
-        assertEquals(zeroOne, normalize(zeroOne));
-        assertEquals(oneZero, normalize(oneZero));
+        assertEquals(zeroOne, zeroOne.normalize());
+        assertEquals(oneZero, oneZero.normalize());
         
-        assertEquals(zero, normalize(new ID(zero, zeroZero)));
-        assertEquals(zero, normalize(new ID(zeroZero, zero)));
-        assertEquals(oneZero, normalize(new ID(one, zeroZero)));
-        assertEquals(zeroOne, normalize(new ID(zeroZero, one)));
+        assertEquals(zero, new ID(zero, zeroZero).normalize());
+        assertEquals(zero, new ID(zeroZero, zero).normalize());
+        assertEquals(oneZero, new ID(one, zeroZero).normalize());
+        assertEquals(zeroOne, new ID(zeroZero, one).normalize());
         
-        assertEquals(one, normalize(new ID(one, oneOne)));
-        assertEquals(one, normalize(new ID(oneOne, one)));
-        assertEquals(zeroOne, normalize(new ID(zero, oneOne)));
-        assertEquals(oneZero, normalize(new ID(oneOne, zero)));
+        assertEquals(one, new ID(one, oneOne).normalize());
+        assertEquals(one, new ID(oneOne, one).normalize());
+        assertEquals(zeroOne, new ID(zero, oneOne).normalize());
+        assertEquals(oneZero, new ID(oneOne, zero).normalize());
     }
     
     @Test

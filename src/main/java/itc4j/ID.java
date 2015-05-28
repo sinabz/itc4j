@@ -64,21 +64,17 @@ public final class ID implements Serializable {
         return isLeaf() && value == 1;
     }
 
-    static ID normalize(ID id) {
-        assert id != null;
-        id.normalizeChildren();
-        if (id.isLeaf()) {
-            return id;
+    ID normalize() {
+        if (!isLeaf()) {
+            normalizeChildren();
+            if (left.isZero() && right.isZero()) {
+                return newID_0();
+            }
+            else if (left.isOne() && right.isOne()) {
+                return newID_1();
+            }
         }
-        else if (id.getLeft().isZero() && id.getRight().isZero()) {
-            return newID_0();
-        }
-        else if (id.getLeft().isOne() && id.getRight().isOne()) {
-            return newID_1();
-        }
-        else {
-            return id;
-        }
+        return this;
     }
 
     private void normalizeChildren() {
@@ -91,11 +87,11 @@ public final class ID implements Serializable {
     }
 
     private void normalizeRight() {
-        right = normalize(right);
+        right = right.normalize();
     }
 
     private void normalizeLeft() {
-        left = normalize(left);
+        left = left.normalize();
     }
 
     ID[] split() {
@@ -164,7 +160,8 @@ public final class ID implements Serializable {
         else {
             ID leftSum = left.sum(other.getLeft());
             ID rightSum = right.sum(other.getRight());
-            return normalize(new ID(leftSum, rightSum));
+            ID sum = new ID(leftSum, rightSum);
+            return sum.normalize();
         }
     }
 
