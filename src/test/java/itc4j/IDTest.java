@@ -9,12 +9,12 @@ import static org.junit.Assert.*;
  */
 public class IDTest {
     
-    private final ID zero = ID.newID_0();
-    private final ID one = ID.newID_1();
-    private final ID zeroZero = new ID(ID.newID_0(), ID.newID_0());
-    private final ID zeroOne = new ID(ID.newID_0(), ID.newID_1());
-    private final ID oneZero = new ID(ID.newID_1(), ID.newID_0());
-    private final ID oneOne = new ID(ID.newID_1(), ID.newID_1());
+    private final ID zero = IDs.zero();
+    private final ID one = IDs.one();
+    private final ID zeroZero = IDs.with(IDs.zero(), IDs.zero());
+    private final ID zeroOne = IDs.with(IDs.zero(), IDs.one());
+    private final ID oneZero = IDs.with(IDs.one(), IDs.zero());
+    private final ID oneOne = IDs.with(IDs.one(), IDs.one());
     
     @Test
     public void testIsLeaf() {
@@ -74,15 +74,15 @@ public class IDTest {
         assertEquals(zeroOne, zeroOne.normalize());
         assertEquals(oneZero, oneZero.normalize());
         
-        assertEquals(zero, new ID(zero, zeroZero).normalize());
-        assertEquals(zero, new ID(zeroZero, zero).normalize());
-        assertEquals(oneZero, new ID(one, zeroZero).normalize());
-        assertEquals(zeroOne, new ID(zeroZero, one).normalize());
+        assertEquals(zero, IDs.with(zero, zeroZero).normalize());
+        assertEquals(zero, IDs.with(zeroZero, zero).normalize());
+        assertEquals(oneZero, IDs.with(one, zeroZero).normalize());
+        assertEquals(zeroOne, IDs.with(zeroZero, one).normalize());
         
-        assertEquals(one, new ID(one, oneOne).normalize());
-        assertEquals(one, new ID(oneOne, one).normalize());
-        assertEquals(zeroOne, new ID(zero, oneOne).normalize());
-        assertEquals(oneZero, new ID(oneOne, zero).normalize());
+        assertEquals(one, IDs.with(one, oneOne).normalize());
+        assertEquals(one, IDs.with(oneOne, one).normalize());
+        assertEquals(zeroOne, IDs.with(zero, oneOne).normalize());
+        assertEquals(oneZero, IDs.with(oneOne, zero).normalize());
     }
     
     @Test
@@ -102,8 +102,8 @@ public class IDTest {
         // split((0, i)) = ((0,i1), (0,i2)), where (i1, i2) = split(i)
         ID[] splitOne = one.split();
         ID[] expected = new ID[] {
-            new ID(zero, splitOne[0]),
-            new ID(zero, splitOne[1])
+            IDs.with(zero, splitOne[0]),
+            IDs.with(zero, splitOne[1])
         };
         assertArrayEquals(expected, zeroOne.split());
     }
@@ -113,8 +113,8 @@ public class IDTest {
         // split((i, 0)) = ((i1,0), (i2,0)), where (i1, i2) = split(i)
         ID[] splitOne = one.split();
         ID[] expected = new ID[] {
-            new ID(splitOne[0], zero),
-            new ID(splitOne[1], zero)
+            IDs.with(splitOne[0], zero),
+            IDs.with(splitOne[1], zero)
         };
         assertArrayEquals(expected, oneZero.split());
     }
@@ -138,8 +138,8 @@ public class IDTest {
         assertEquals(one, oneZero.sum(zeroOne));
         assertEquals(one, zeroOne.sum(oneZero));
         
-        ID expected = new ID(one, oneZero);
-        assertEquals(expected, oneZero.sum(new ID(zero, oneZero)));
+        ID expected = IDs.with(one, oneZero);
+        assertEquals(expected, oneZero.sum(IDs.with(zero, oneZero)));
     }
     
     @Test

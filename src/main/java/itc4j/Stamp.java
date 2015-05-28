@@ -2,8 +2,6 @@ package itc4j;
 
 import java.io.Serializable;
 
-import static itc4j.ID.*;
-
 /**
  * @author Sina Bagherzadeh
  */
@@ -12,7 +10,7 @@ public final class Stamp implements Serializable {
     private Event event;
 
     public Stamp() {
-        id = newID_1();
+        id = IDs.one();
         event = new Event(0);
     }
 
@@ -30,7 +28,7 @@ public final class Stamp implements Serializable {
     }
 
     static Stamp[] peek(Stamp s) {
-        return new Stamp[]{new Stamp(s.id, s.event), new Stamp(newID_0(), s.event)};
+        return new Stamp[]{new Stamp(s.id, s.event), new Stamp(IDs.zero(), s.event)};
     }
 
     static Stamp join(Stamp s1, Stamp s2) {
@@ -38,18 +36,18 @@ public final class Stamp implements Serializable {
     }
 
     private static Event fill(ID id, Event event) {
-        if (id.equals(ID_0))
+        if (id.equals(IDs.zero()))
             return event;
-        if (id.equals(ID_1))
+        if (id.equals(IDs.one()))
             return new Event(Event.max(event));
         if (Event.isValuedOnly(event))
             return new Event(event.getValue());
-        if (id.getLeft() != null && id.getLeft().equals(ID_1)) {
+        if (id.getLeft() != null && id.getLeft().equals(IDs.one())) {
             Event er = fill(id.getRight(), event.getRight());
             int max = Math.max(Event.max(event.getLeft()), Event.min(er));
             return Event.norm(new Event(event.getValue(), new Event(max), er));
         }
-        if (id.getRight() != null && id.getRight().equals(ID_1)) {
+        if (id.getRight() != null && id.getRight().equals(IDs.one())) {
             Event el = fill(id.getLeft(), event.getLeft());
             int max = Math.max(Event.max(event.getRight()), Event.min(el));
             return Event.norm(new Event(event.getValue(), el, new Event(max)));
@@ -59,19 +57,19 @@ public final class Stamp implements Serializable {
     }
 
     private static GrowResult grow(ID id, Event event) {
-        if (id.equals(ID_1) && Event.isValuedOnly(event))
+        if (id.equals(IDs.one()) && Event.isValuedOnly(event))
             return new GrowResult(new Event(event.getValue() + 1), 0);
         if (Event.isValuedOnly(event)) {
             GrowResult er = grow(id, new Event(event.getValue(), new Event(0), new Event(0)));
             er.setC(er.getC() + event.maxDepth() + 1);
             return er;
         }
-        if (id.getLeft() != null && id.getLeft().equals(ID_0)) {
+        if (id.getLeft() != null && id.getLeft().equals(IDs.zero())) {
             GrowResult er = grow(id.getRight(), event.getRight());
             Event e = new Event(event.getValue(), event.getLeft(), er.getEvent());
             return new GrowResult(e, er.getC() + 1);
         }
-        if (id.getRight() != null && id.getRight().equals(ID_0)) {
+        if (id.getRight() != null && id.getRight().equals(IDs.zero())) {
             GrowResult er = grow(id.getLeft(), event.getLeft());
             Event e = new Event(event.getValue(), er.getEvent(), event.getRight());
             return new GrowResult(e, er.getC() + 1);
