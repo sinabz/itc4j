@@ -32,34 +32,34 @@ public final class Stamp implements Serializable {
     }
 
     static Stamp join(Stamp s1, Stamp s2) {
-        return new Stamp(s1.id.sum(s2.id), Event.join(s1.event, s2.event));
+        return new Stamp(s1.id.sum(s2.id), s1.event.join(s2.event));
     }
 
     private static Event fill(ID id, Event event) {
         if (id.equals(IDs.zero()))
             return event;
         if (id.equals(IDs.one()))
-            return new Event(Event.max(event));
-        if (Event.isValuedOnly(event))
+            return new Event(event.max());
+        if (event.isLeaf())
             return new Event(event.getValue());
         if (id.getLeft() != null && id.getLeft().equals(IDs.one())) {
             Event er = fill(id.getRight(), event.getRight());
-            int max = Math.max(Event.max(event.getLeft()), Event.min(er));
-            return Event.norm(new Event(event.getValue(), new Event(max), er));
+            int max = Math.max(event.getLeft().max(), er.min());
+            return new Event(event.getValue(), new Event(max), er).normalize();
         }
         if (id.getRight() != null && id.getRight().equals(IDs.one())) {
             Event el = fill(id.getLeft(), event.getLeft());
-            int max = Math.max(Event.max(event.getRight()), Event.min(el));
-            return Event.norm(new Event(event.getValue(), el, new Event(max)));
+            int max = Math.max(event.getRight().max(), el.min());
+            return new Event(event.getValue(), el, new Event(max)).normalize();
         }
-        return Event.norm(new Event(event.getValue(), fill(id.getLeft(), event.getLeft()),
-                fill(id.getRight(), event.getRight())));
+        return new Event(event.getValue(), fill(id.getLeft(), event.getLeft()),
+                fill(id.getRight(), event.getRight())).normalize();
     }
 
     private static GrowResult grow(ID id, Event event) {
-        if (id.equals(IDs.one()) && Event.isValuedOnly(event))
+        if (id.equals(IDs.one()) && event.isLeaf())
             return new GrowResult(new Event(event.getValue() + 1), 0);
-        if (Event.isValuedOnly(event)) {
+        if (event.isLeaf()) {
             GrowResult er = grow(id, new Event(event.getValue(), new Event(0), new Event(0)));
             er.setC(er.getC() + event.maxDepth() + 1);
             return er;
@@ -134,7 +134,7 @@ public final class Stamp implements Serializable {
     }
 
     public static boolean leq(Stamp s1, Stamp s2) {
-        return Event.leq(s1.event, s2.event);
+        return s1.event.leq(s2.event);
     }
 
 }

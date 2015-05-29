@@ -1,22 +1,31 @@
 package itc4j;
 
 import java.io.Serializable;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Sina Bagherzadeh
  */
-public final class Event implements Serializable {
+public final class Event implements Serializable, Cloneable {
 
-    private Event left = null;
-    private Event right = null;
-    private int value;
+    private static final long serialVersionUID = -9008822740100066140L;
+
+    private Event left;
+    private Event right;
+    private final int value;
 
     Event() {
         value = 0;
+        this.left = null;
+        this.right = null;
     }
 
     Event(int value) {
         this.value = value;
+        this.left = null;
+        this.right = null;
     }
 
     Event(int value, Event left, Event right) {
@@ -37,144 +46,187 @@ public final class Event implements Serializable {
         return value;
     }
 
-    protected static Event lift(Event e, int m) {
-        if (e.right == null && e.left == null)
-            return new Event(e.value + m);
-        else
-            return new Event(e.value + m, e.left == null ? null : e.left, e.right == null ? null : e.right);
-    }
-
-    protected static Event sink(Event e, int m) {
-        if (e.right == null && e.left == null)
-            return new Event(e.value - m);
-        else
-            return new Event(e.value - m, e.left == null ? null : e.left, e.right == null ? null : e.right);
-    }
-
-    protected static int min(Event e) {
-        if (e == null)
-            return 0;
-        if (e.left == null && e.right == null)
-            return e.value;
-        return e.value + Math.min(min(e.left), min(e.right));
-    }
-
-    protected static int max(Event e) {
-        if (e == null)
-            return 0;
-        if (e.left == null && e.right == null)
-            return e.value;
-        if (e.left != null && e.right != null) {
-            int m = Math.max(max(e.left), max(e.right));
-            return e.value + m;
+    int min() {
+        if (isLeaf()) {
+            return value;
         }
-        throw new RuntimeException("Every node must have either two children or no child.");
-    }
-
-    public static Event norm(Event e) {
-        if (e.left == null && e.right == null)
-            return new Event(e.value);
-        if (e.left != null && e.right != null && isValuedOnly(e.left) && isValuedOnly(e.right) &&
-                e.left.value == e.right.value)
-            return new Event(e.value + e.left.value);
-        if (e.left != null && e.right != null) {
-            int m = Math.min(min(e.left), min(e.right));
-            return new Event(e.value + m, sink(e.left, m), sink(e.right, m));
+        else {
+            int min = Math.min(left.min(), right.min());
+            return value + min;
         }
-        throw new RuntimeException("Every node must have either two children or no child.");
     }
 
-    protected static boolean isValuedOnly(Event e) {
-        return e.left == null && e.right == null;
-    }
-
-    @SuppressWarnings({"ConstantConditions"})
-    private static boolean innerLeq(Event e1, Event e2) {
-        if (e1.left == null && e1.right == null)
-            return e1.value <= e2.value;
-        else if (e2.left == null && e2.right == null)
-            return e1.value <= e2.value &&
-                    innerLeq(lift(e1.left, e1.value), e2) &&
-                    innerLeq(lift(e1.right, e1.value), e2);
-        else if (e1.left != null && e1.right != null && e2.left != null && e2.right != null)
-            return e1.value <= e2.value &&
-                    innerLeq(lift(e1.left, e1.value), lift(e2.left, e2.value)) &&
-                    innerLeq(lift(e1.right, e1.value), lift(e2.right, e2.value));
-        throw new RuntimeException("Every node must have either two children or no child.");
-    }
-
-    protected static boolean leq(Event e1, Event e2) {
-        return innerLeq(e1, e2);
-    }
-
-    private static Event innerJoin(Event e1, Event e2) {
-        if (e1.right == null && e1.left == null && e2.left == null && e2.right == null)
-            return new Event(Math.max(e1.value, e2.value));
-        else if (e1.right == null && e1.left == null)
-            return innerJoin(new Event(e1.value, new Event(0), new Event(0)) ,e2);
-        else if (e2.left == null && e2.right == null)
-            return innerJoin(e1, new Event(e2.value, new Event(0), new Event(0)));
-        else if (e1.right != null && e1.left != null && e2.left != null && e2.right != null) {
-            if (e1.value > e2.value)
-                return innerJoin(e2, e1);
-            else {
-                Event left = innerJoin(e1.left ,lift(e2.left ,e2.value - e1.value));
-                Event right = innerJoin(e1.right ,lift(e2.right ,e2.value - e1.value));
-                return norm(new Event(e1.value, left, right));
-            }
+    int max() {
+        if (isLeaf()) {
+            return value;
         }
-        throw new RuntimeException("Every node must have either two children or no child.");
-    }
-
-    protected static Event join(Event e1, Event e2) {
-        return innerJoin(e1, e2);
-    }
-
-    @SuppressWarnings({"ConstantConditions", "SimplifiableIfStatement"})
-    public boolean equals(Object o) {
-        if (o == null)
-            return false;
-        if (!(o instanceof Event))
-            return false;
-        Event e = (Event) o;
-        if (left == null && e.left != null && right == null && e.right != null )
-            return false;
-        if (left != null && e.left == null && right != null && e.right == null )
-            return false;
-        if (left == null && e.left == null && right == null && e.right == null )
-            return value == e.value;
-        if (left != null && right != null && e.left != null && e.right != null )
-            return value == e.value && left.equals(e.left) && right.equals(e.right);
-        return false;
-    }
-
-    public String toString() {
-        if (right == null && left == null)
-            return String.valueOf(value);
-        return "(" + value + ", " + left + ", " + right + ")";
-    }
-
-    @SuppressWarnings({"ConstantConditions"})
-    private int maxDepth(int depth) {
-        if (left == null && right == null)
-            return depth;
-        return Math.max(left.maxDepth(depth + 1), right.maxDepth(depth + 1));
+        else {
+            int max = Math.max(left.max(), right.max());
+            return value + max;
+        }
     }
 
     public int maxDepth() {
         return maxDepth(0);
     }
 
-    @SuppressWarnings({"CloneDoesntCallSuperClone"})
-    public Event clone() {
-        Event clone = new Event();
-        clone.value = value;
-        if (right != null)
-            clone.right = right.clone();
-        if (left != null)
-            clone.left = left.clone();
-        return clone;
+    private int maxDepth(int depth) {
+        if (isLeaf()) {
+            return depth;
+        }
+        else {
+            int leftDepth = left.maxDepth(depth + 1);
+            int rightDepth = right.maxDepth(depth + 1);
+            return Math.max(leftDepth, rightDepth);
+        }
+    }
+    
+    boolean isLeaf() {
+        return left == null && right == null;
     }
 
+    Event lift(int m) {
+        return new Event(value + m, left, right);
+    }
+
+    Event sink(int m) {
+        return new Event(value - m, left, right);
+    }
+
+    public Event normalize() {
+        if (isLeaf()) {
+            return this;
+        }
+        else {
+            return normalizeNonLeaf();
+        }
+    }
+
+    private Event normalizeNonLeaf() {
+        if (left.isLeaf() && right.isLeaf() && left.value == right.value) {
+            return new Event(value + left.value);
+        }
+        else {
+            int min = Math.min(left.min(), right.min());
+            return new Event(value + min, left.sink(min), right.sink(min));
+        }
+    }
+
+    boolean leq(Event other) {
+        if (isLeaf()) {
+            return value <= other.value;
+        }
+        else if (other.isLeaf()) {
+            return value <= other.value &&
+                   liftedLeft().leq(other) &&
+                   liftedRight().leq(other);
+        }
+        else {
+            return leqNonLeafs(other);
+        }
+    }
+
+    private Event liftedRight() {
+        return right.lift(value);
+    }
+
+    private Event liftedLeft() {
+        return left.lift(value);
+    }
+
+    private boolean leqNonLeafs(Event other) {
+        return value <= other.value &&
+               liftedLeft().leq(other.liftedLeft()) &&
+               liftedRight().leq(other.liftedRight());
+    }
+
+    Event join(Event other) {
+        if (isLeaf()) {
+            return joinLeaf(other);
+        }
+        else {
+            return joinNonLeaf(other);
+        }
+    }
+
+    private Event joinLeaf(Event other) {
+        if (other.isLeaf()) {
+            return new Event(Math.max(value, other.value));
+        }
+        else {
+            return new Event(value, new Event(0), new Event(0)).join(other);
+        }
+    }
+    
+    private Event joinNonLeaf(Event other) {
+        if (other.isLeaf()) {
+            return join(new Event(other.value, new Event(0), new Event(0)));
+        }
+        else {
+            if (value > other.value)
+                return other.join(this);
+            else {
+                return new Event(value, leftJoin(other), rightJoin(other)).normalize();
+            }
+        }
+    }
+
+    private Event leftJoin(Event other) {
+        Event otherLiftedLeft = other.left.lift(other.value - value);
+        return left.join(otherLiftedLeft);
+    }
+
+    private Event rightJoin(Event other) {
+        Event otherLiftedRight = other.right.lift(other.value - value);
+        return right.join(otherLiftedRight);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Event)) {
+            return false;
+        }
+        else {
+            Event other = (Event)object;
+            return value == other.value &&
+                   Objects.equals(left, other.left) &&
+                   Objects.equals(right, other.right);
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 23 * hash + Objects.hashCode(left);
+        hash = 23 * hash + Objects.hashCode(right);
+        hash = 23 * hash + this.value;
+        return hash;
+    }
+
+    @Override
+    public String toString() {
+        if (isLeaf()) {
+            return String.valueOf(value);
+        }
+        else {
+            return "(" + value + ", " + left + ", " + right + ")";
+        }
+    }
+
+    @Override
+    public Event clone() {
+        try {
+            Event clone = (Event)super.clone();
+            if (right != null)
+                clone.right = right.clone();
+            if (left != null)
+                clone.left = left.clone();
+            return clone;
+        }
+        catch(CloneNotSupportedException ex) {
+            Logger.getLogger(Event.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 
 }
