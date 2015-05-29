@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * LeafEvent
  *
+ * @author Sina Bagherzadeh
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 29/mai/2015
  */
@@ -68,7 +69,7 @@ final class LeafEvent extends Event implements Serializable, Cloneable {
     }
 
     @Override
-    public Event normalize() {
+    Event normalize() {
         return this;
     }
 
@@ -111,7 +112,7 @@ final class LeafEvent extends Event implements Serializable, Cloneable {
     }
 
     @Override
-    public Event clone() {
+    protected Event clone() {
         return super.clone();
     }
     

@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 /**
  * @author Sina Bagherzadeh
  */
-public abstract class ID implements Cloneable {
+abstract class ID implements Cloneable {
     
     abstract ID getLeft();
     

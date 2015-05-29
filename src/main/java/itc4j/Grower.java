@@ -4,6 +4,7 @@ package itc4j;
 /**
  * Grower
  *
+ * @author Sina Bagherzadeh
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 29/mai/2015
  */

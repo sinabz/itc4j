@@ -30,7 +30,7 @@ public final class Stamp implements Cloneable, Serializable {
         return event;
     }
 
-    Stamp[] fork() {
+    public Stamp[] fork() {
         ID[] ids = id.split();
         return new Stamp[] {
             new Stamp(ids[0], event),
@@ -38,20 +38,20 @@ public final class Stamp implements Cloneable, Serializable {
         };
     }
 
-    Stamp[] peek() {
+    public Stamp[] peek() {
         return new Stamp[] {
             new Stamp(id, event),
             new Stamp(IDs.zero(), event)
         };
     }
 
-    Stamp join(Stamp other) {
+    public Stamp join(Stamp other) {
         ID idSum = id.sum(other.id);
         Event eventJoin = event.join(other.event);
         return new Stamp(idSum, eventJoin);
     }
 
-    Stamp event() {
+    public Stamp event() {
         Event filled = Filler.fill(id, event);
         if (!filled.equals(event)) {
             return new Stamp(id, filled);
@@ -74,17 +74,19 @@ public final class Stamp implements Cloneable, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Stamp stamp = (Stamp) o;
-        return !(event != null ? !event.equals(stamp.event) : stamp.event != null) &&
-                !(id != null ? !id.equals(stamp.id) : stamp.id != null);
+        if (!(o instanceof Stamp)) {
+            return false;
+        }
+        else {
+            Stamp other = (Stamp) o;
+            return id.equals(other.getId()) && event.equals(other.getEvent());
+        }
     }
 
     @Override
     public int hashCode() {
-        int result = id != null ? id.hashCode() : 0;
-        result = 31 * result + (event != null ? event.hashCode() : 0);
+        int result = id.hashCode();
+        result = 31 * result + event.hashCode();
         return result;
     }
 

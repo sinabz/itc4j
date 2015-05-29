@@ -1,4 +1,3 @@
-
 package itc4j;
 
 import java.util.Objects;
@@ -6,6 +5,7 @@ import java.util.Objects;
 /**
  * NonLeafEvent
  *
+ * @author Sina Bagherzadeh
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 29/mai/2015
  */
@@ -69,7 +69,7 @@ final class NonLeafEvent extends Event {
     }
 
     @Override
-    public Event normalize() {
+    Event normalize() {
         if (left.isLeaf() && right.isLeaf() && left.getValue() == right.getValue()) {
             return Events.with(value + left.getValue());
         }
@@ -167,7 +167,7 @@ final class NonLeafEvent extends Event {
     }
 
     @Override
-    public Event clone() {
+    protected Event clone() {
         NonLeafEvent clone = (NonLeafEvent)super.clone();
         clone.right = right.clone();
         clone.left = left.clone();

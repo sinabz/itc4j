@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 /**
  * @author Sina Bagherzadeh
  */
-public abstract class Event implements Cloneable {
+abstract class Event implements Cloneable {
 
     Event() {
         
@@ -34,14 +34,14 @@ public abstract class Event implements Cloneable {
 
     abstract Event sink(int m);
 
-    abstract public Event normalize();
+    abstract Event normalize();
 
     abstract boolean leq(Event other);
 
     abstract Event join(Event other);
 
     @Override
-    public Event clone() {
+    protected Event clone() {
         try {
             return (Event)super.clone();
         }

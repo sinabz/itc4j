@@ -6,6 +6,7 @@ import java.util.Objects;
 /**
  * NonLeafID
  *
+ * @author Sina Bagherzadeh
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 28/mai/2015
  */
@@ -21,11 +22,11 @@ final class NonLeafID extends ID implements Serializable {
         this.right = right;
     }
 
-    public ID getLeft() {
+    ID getLeft() {
         return left;
     }
 
-    public ID getRight() {
+    ID getRight() {
         return right;
     }
 
@@ -44,14 +45,6 @@ final class NonLeafID extends ID implements Serializable {
         return false;
     }
 
-    protected boolean hasRight() {
-        return right != null;
-    }
-
-    protected boolean hasLeft() {
-        return left != null;
-    }
-
     @Override
     ID normalize() {
         normalizeChildren();
@@ -67,12 +60,8 @@ final class NonLeafID extends ID implements Serializable {
     }
 
     private void normalizeChildren() {
-        if (hasRight()) {
-            normalizeRight();
-        }
-        if (hasLeft()) {
-            normalizeLeft();
-        }
+        normalizeRight();
+        normalizeLeft();
     }
 
     private void normalizeRight() {
@@ -85,10 +74,10 @@ final class NonLeafID extends ID implements Serializable {
 
     @Override
     ID[] split() {
-        if (hasLeft() && left.isZero()) {
+        if (left.isZero()) {
             return splitWithLeftZero();
         }
-        else if (hasRight() && getRight().isZero()) {
+        else if (right.isZero()) {
             return splitWithRightZero();
         }
         else {
@@ -121,7 +110,7 @@ final class NonLeafID extends ID implements Serializable {
         if (other.isZero()) {
             return this;
         }
-        else if (other instanceof NonLeafID) {
+        else if (!other.isLeaf()) {
             return sumNonLeaf((NonLeafID)other);
         }
         else {
@@ -129,7 +118,7 @@ final class NonLeafID extends ID implements Serializable {
         }
     }
 
-    private ID sumNonLeaf(NonLeafID other) {
+    private ID sumNonLeaf(ID other) {
         ID leftSum = left.sum(other.getLeft());
         ID rightSum = right.sum(other.getRight());
         ID sum = IDs.with(leftSum, rightSum);
@@ -138,12 +127,13 @@ final class NonLeafID extends ID implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if(!(object instanceof NonLeafID)) {
+        if (!(object instanceof NonLeafID)) {
             return false;
         }
         else {
             NonLeafID other = (NonLeafID)object;
-            return left.equals(other.getLeft()) && right.equals(other.getRight());
+            return left.equals(other.getLeft()) &&
+                   right.equals(other.getRight());
         }
     }
 
@@ -158,14 +148,10 @@ final class NonLeafID extends ID implements Serializable {
     }
 
     @Override
-    public ID clone() {
+    protected ID clone() {
         NonLeafID clone = (NonLeafID)super.clone();
-        if (hasLeft()) {
-            clone.left = left.clone();
-        }
-        if (hasRight()) {
-            clone.right = right.clone();
-        }
+        clone.left = left.clone();
+        clone.right = right.clone();
         return clone;
     }
     
