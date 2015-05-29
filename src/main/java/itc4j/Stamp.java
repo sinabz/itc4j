@@ -57,8 +57,7 @@ public final class Stamp implements Cloneable, Serializable {
             return new Stamp(id, filled);
         }
         else {
-            GrowResult growth = Grower.grow(id, event);
-            return new Stamp(id, growth.getEvent());
+            return new Stamp(id, Grower.grow(id, event));
         }
     }
 

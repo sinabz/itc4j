@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Sina Bagherzadeh
+ * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  */
 public class StampTest {
     

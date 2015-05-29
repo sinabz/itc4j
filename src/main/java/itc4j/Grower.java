@@ -9,8 +9,12 @@ package itc4j;
  * @version 29/mai/2015
  */
 final class Grower {
+    
+    static Event grow(ID id, Event event) {
+        return innerGrow(id, event).getEvent();
+    }
 
-    static GrowResult grow(ID id, Event event) {
+    private static GrowResult innerGrow(ID id, Event event) {
         if (id.isLeaf()) {
             return growLeafID(id, event);
         }
@@ -44,7 +48,7 @@ final class Grower {
     }
 
     private static GrowResult growLeafEvent(ID id, Event event) {
-        GrowResult er = grow(id, Events.with(event.getValue(), Events.zero(), Events.zero()));
+        GrowResult er = innerGrow(id, Events.with(event.getValue(), Events.zero(), Events.zero()));
         er.setCost(er.getCost() + event.maxDepth() + 1);
         return er;
     }
@@ -55,7 +59,7 @@ final class Grower {
     }
 
     private static GrowResult growRight(ID id, Event event) {
-        return grow(id.getRight(), event.getRight());
+        return innerGrow(id.getRight(), event.getRight());
     }
 
     private static GrowResult rightGrowth(Event event, GrowResult growth) {
@@ -70,7 +74,7 @@ final class Grower {
     }
 
     private static GrowResult growLeft(ID id, Event event) {
-        return grow(id.getLeft(), event.getLeft());
+        return innerGrow(id.getLeft(), event.getLeft());
     }
 
     private static GrowResult leftGrowth(Event event, GrowResult growth) {
