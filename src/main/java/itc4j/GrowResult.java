@@ -6,23 +6,23 @@ package itc4j;
 final class GrowResult {
     
     private final Event event;
-    private int c;
+    private int cost;
 
-    GrowResult(Event event, int c) {
+    GrowResult(Event event, int cost) {
         this.event = event;
-        this.c = c;
+        this.cost = cost;
     }
 
     Event getEvent() {
         return event;
     }
 
-    int getC() {
-        return c;
+    int getCost() {
+        return cost;
     }
 
-    void setC(int c) {
-        this.c = c;
+    void setCost(int cost) {
+        this.cost = cost;
     }
     
 }
