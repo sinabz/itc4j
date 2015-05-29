@@ -12,16 +12,16 @@ import static org.junit.Assert.assertTrue;
  */
 public class EventTest {
     
-    private final Event event1 = new Event(1);
-    private final Event event2 = new Event(2, new Event(0), new Event(2));
-    private final Event event3 = new Event(3);
+    private final Event event1 = Events.with(1);
+    private final Event event2 = Events.with(2, Events.with(0), Events.with(2));
+    private final Event event3 = Events.with(3);
     
     @Test
     public void testEquals() {
-        assertTrue(event1.equals(new Event(1)));
+        assertTrue(event1.equals(Events.with(1)));
         assertFalse(event1.equals(event2));
         
-        assertTrue(event2.equals(new Event(2, new Event(0), new Event(2))));
+        assertTrue(event2.equals(Events.with(2, Events.with(0), Events.with(2))));
     }
     
     @Test
@@ -64,13 +64,13 @@ public class EventTest {
     public void testNormalize() {
         Event expected, event;
         
-        expected = new Event(3);
-        event = new Event(2, new Event(1), new Event(1));
+        expected = Events.with(3);
+        event = Events.with(2, Events.with(1), Events.with(1));
         // norm((2, 1, 1)) == 3
         assertEquals(expected, event.normalize());
         
-        expected = new Event(4, new Event(0, new Event(1), new Event(0)), new Event(1));
-        event = new Event(2, new Event(2, new Event(1), new Event(0)), new Event(3));
+        expected = Events.with(4, Events.with(0, Events.with(1), Events.with(0)), Events.with(1));
+        event = Events.with(2, Events.with(2, Events.with(1), Events.with(0)), Events.with(3));
         // norm((2, (2, 1, 0), 3)) == (4, (0, 1, 0), 1)
         assertEquals(expected, event.normalize());
     }
@@ -102,7 +102,7 @@ public class EventTest {
         assertEquals(event2, event1.join(event2));
         assertEquals(event3, event1.join(event3));
         
-        Event expected = new Event(3, new Event(0), new Event(1));
+        Event expected = Events.with(3, Events.with(0), Events.with(1));
         assertEquals(expected, event2.join(event3));
     }
     

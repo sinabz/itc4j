@@ -11,7 +11,7 @@ public final class Stamp implements Serializable {
 
     public Stamp() {
         id = IDs.one();
-        event = new Event(0);
+        event = Events.zero();
     }
 
     Stamp(ID id, Event event) {
@@ -39,48 +39,48 @@ public final class Stamp implements Serializable {
         if (id.equals(IDs.zero()))
             return event;
         if (id.equals(IDs.one()))
-            return new Event(event.max());
+            return Events.with(event.max());
         if (event.isLeaf())
-            return new Event(event.getValue());
+            return Events.with(event.getValue());
         if (id.getLeft() != null && id.getLeft().equals(IDs.one())) {
             Event er = fill(id.getRight(), event.getRight());
             int max = Math.max(event.getLeft().max(), er.min());
-            return new Event(event.getValue(), new Event(max), er).normalize();
+            return Events.with(event.getValue(), Events.with(max), er).normalize();
         }
         if (id.getRight() != null && id.getRight().equals(IDs.one())) {
             Event el = fill(id.getLeft(), event.getLeft());
             int max = Math.max(event.getRight().max(), el.min());
-            return new Event(event.getValue(), el, new Event(max)).normalize();
+            return Events.with(event.getValue(), el, Events.with(max)).normalize();
         }
-        return new Event(event.getValue(), fill(id.getLeft(), event.getLeft()),
+        return Events.with(event.getValue(), fill(id.getLeft(), event.getLeft()),
                 fill(id.getRight(), event.getRight())).normalize();
     }
 
     private static GrowResult grow(ID id, Event event) {
         if (id.equals(IDs.one()) && event.isLeaf())
-            return new GrowResult(new Event(event.getValue() + 1), 0);
+            return new GrowResult(Events.with(event.getValue() + 1), 0);
         if (event.isLeaf()) {
-            GrowResult er = grow(id, new Event(event.getValue(), new Event(0), new Event(0)));
+            GrowResult er = grow(id, Events.with(event.getValue(), Events.zero(), Events.zero()));
             er.setC(er.getC() + event.maxDepth() + 1);
             return er;
         }
         if (id.getLeft() != null && id.getLeft().equals(IDs.zero())) {
             GrowResult er = grow(id.getRight(), event.getRight());
-            Event e = new Event(event.getValue(), event.getLeft(), er.getEvent());
+            Event e = Events.with(event.getValue(), event.getLeft(), er.getEvent());
             return new GrowResult(e, er.getC() + 1);
         }
         if (id.getRight() != null && id.getRight().equals(IDs.zero())) {
             GrowResult er = grow(id.getLeft(), event.getLeft());
-            Event e = new Event(event.getValue(), er.getEvent(), event.getRight());
+            Event e = Events.with(event.getValue(), er.getEvent(), event.getRight());
             return new GrowResult(e, er.getC() + 1);
         }
         GrowResult left = grow(id.getLeft(), event.getLeft());
         GrowResult right = grow(id.getRight(), event.getRight());
         if (left.getC() < right.getC()) {
-            Event e = new Event(event.getValue(), left.getEvent(), event.getRight());
+            Event e = Events.with(event.getValue(), left.getEvent(), event.getRight());
             return new GrowResult(e, left.getC() + 1);
         } else {
-            Event e = new Event(event.getValue(), event.getLeft(), right.getEvent());
+            Event e = Events.with(event.getValue(), event.getLeft(), right.getEvent());
             return new GrowResult(e, right.getC() + 1);
         }
     }
