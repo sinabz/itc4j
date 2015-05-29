@@ -6,7 +6,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static itc4j.Stamp.leq;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -118,8 +117,8 @@ public class StampTest {
     public void testLeq() {
         Stamp s1 = new Stamp();
         Stamp s2 = new Stamp();
-        Assert.assertTrue(leq(s1, s2.event()));
-        Assert.assertFalse(leq(s2.event(), s1));
+        Assert.assertTrue(s1.leq(s2.event()));
+        Assert.assertFalse(s2.event().leq(s1));
     }
     
     private static void assertIntEquals(int expected, int actual) {

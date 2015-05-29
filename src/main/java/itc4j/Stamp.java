@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * @author Sina Bagherzadeh
  */
-public final class Stamp implements Cloneable, Serializable {
+public final class Stamp implements Serializable {
 
     private static final long serialVersionUID = 1750149585711104601L;
     
@@ -67,11 +67,6 @@ public final class Stamp implements Cloneable, Serializable {
     }
 
     @Override
-    public Stamp clone() {
-        return new Stamp(id.clone(), event.clone());
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (!(o instanceof Stamp)) {
             return false;
@@ -91,22 +86,20 @@ public final class Stamp implements Cloneable, Serializable {
 
     //----------------------------------------- API methods --------------------------------------
 
-    public static Stamp[] send(Stamp stamp) {
-        return stamp.event().peek();
+    public Stamp[] send() {
+        return event().peek();
     }
 
-    public static Stamp receive(Stamp stamp1, Stamp stamp2) {
-        Stamp join = stamp1.join(stamp2);
-        return join.event();
+    public Stamp receive(Stamp other) {
+        return join(other).event();
     }
 
-    public static Stamp[] sync(Stamp stamp1, Stamp stamp2) {
-        Stamp join = stamp1.join(stamp2);
-        return join.fork();
+    public Stamp[] sync(Stamp other) {
+        return join(other).fork();
     }
 
-    public static boolean leq(Stamp stamp1, Stamp stamp2) {
-        return stamp1.event.leq(stamp2.event);
+    public boolean leq(Stamp other) {
+        return event.leq(other.event);
     }
 
 }
