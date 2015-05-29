@@ -1,5 +1,6 @@
 package itc4j;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -9,11 +10,13 @@ import java.util.Objects;
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 29/mai/2015
  */
-final class NonLeafEvent extends Event {
+final class NonLeafEvent extends Event implements Serializable {
+
+    private static final long serialVersionUID = 4390279981057181340L;
     
     private final int value;
-    private Event left;
-    private Event right;
+    private final Event left;
+    private final Event right;
 
     NonLeafEvent(int value, Event left, Event right) {
         this.value = value;
@@ -164,14 +167,6 @@ final class NonLeafEvent extends Event {
     @Override
     public String toString() {
         return "(" + value + ", " + left + ", " + right + ")";
-    }
-
-    @Override
-    protected Event clone() {
-        NonLeafEvent clone = (NonLeafEvent)super.clone();
-        clone.right = right.clone();
-        clone.left = left.clone();
-        return clone;
     }
 
 }

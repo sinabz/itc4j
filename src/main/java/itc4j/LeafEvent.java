@@ -9,7 +9,7 @@ import java.io.Serializable;
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 29/mai/2015
  */
-final class LeafEvent extends Event implements Serializable, Cloneable {
+final class LeafEvent extends Event implements Serializable {
 
     private static final long serialVersionUID = -7441138365249091187L;
     
@@ -109,11 +109,6 @@ final class LeafEvent extends Event implements Serializable, Cloneable {
     @Override
     public String toString() {
         return String.valueOf(value);
-    }
-
-    @Override
-    protected Event clone() {
-        return super.clone();
     }
     
 }

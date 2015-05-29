@@ -98,10 +98,5 @@ final class LeafID extends ID implements Serializable {
     public String toString() {
         return String.valueOf(value);
     }
-
-    @Override
-    protected ID clone() {
-        return super.clone();
-    }
     
 }

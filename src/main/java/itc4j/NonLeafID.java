@@ -14,8 +14,8 @@ final class NonLeafID extends ID implements Serializable {
 
     private static final long serialVersionUID = -5030081211956985797L;
 
-    private ID left;
-    private ID right;
+    private final ID left;
+    private final ID right;
 
     NonLeafID(ID left, ID right) {
         this.left = left;
@@ -47,7 +47,10 @@ final class NonLeafID extends ID implements Serializable {
 
     @Override
     ID normalize() {
-        normalizeChildren();
+        return normalize(left.normalize(), right.normalize());
+    }
+
+    private static ID normalize(ID left, ID right) {
         if (left.isZero() && right.isZero()) {
             return IDs.zero();
         }
@@ -55,21 +58,8 @@ final class NonLeafID extends ID implements Serializable {
             return IDs.one();
         }
         else {
-            return this;
+            return IDs.with(left, right);
         }
-    }
-
-    private void normalizeChildren() {
-        normalizeRight();
-        normalizeLeft();
-    }
-
-    private void normalizeRight() {
-        right = right.normalize();
-    }
-
-    private void normalizeLeft() {
-        left = left.normalize();
     }
 
     @Override
@@ -82,8 +72,8 @@ final class NonLeafID extends ID implements Serializable {
         }
         else {
             return new ID[] {
-                IDs.with(left.clone(), IDs.zero()),
-                IDs.with(IDs.zero(), right.clone())
+                IDs.with(left, IDs.zero()),
+                IDs.with(IDs.zero(), right)
             };
         }
     }
@@ -145,14 +135,6 @@ final class NonLeafID extends ID implements Serializable {
     @Override
     public String toString() {
         return "(" + left + ", " + right + ")";
-    }
-
-    @Override
-    protected ID clone() {
-        NonLeafID clone = (NonLeafID)super.clone();
-        clone.left = left.clone();
-        clone.right = right.clone();
-        return clone;
     }
     
 }
