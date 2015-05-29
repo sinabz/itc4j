@@ -34,7 +34,7 @@ public class StampTest {
         System.out.println("join2 = " + join2);
         Stamp event3 = event(join2);
         System.out.println("event3 = " + event3);
-        Assert.assertEquals(new Stamp(new ID(ID.newID_1(), ID.newID_0()), new Event(2)), event3);
+        Assert.assertEquals(new Stamp(IDs.with(IDs.one(), IDs.zero()), new Event(2)), event3);
     }
 
     @Test
