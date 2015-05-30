@@ -1,28 +1,28 @@
 package itc4j;
 
-import java.io.Serializable;
-
 /**
  * @author Sina Bagherzadeh
  */
-public final class GrowResult implements Serializable {
-    private Event event;
-    private int c;
+final class GrowResult {
+    
+    private final Event event;
+    private int cost;
 
-    public GrowResult(Event event, int c) {
+    GrowResult(Event event, int cost) {
         this.event = event;
-        this.c = c;
+        this.cost = cost;
     }
 
-    public Event getEvent() {
+    Event getEvent() {
         return event;
     }
 
-    public int getC() {
-        return c;
+    int getCost() {
+        return cost;
     }
 
-    public void setC(int c) {
-        this.c = c;
+    void setCost(int cost) {
+        this.cost = cost;
     }
+    
 }

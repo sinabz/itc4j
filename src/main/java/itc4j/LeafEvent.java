@@ -5,10 +5,11 @@ import java.io.Serializable;
 /**
  * LeafEvent
  *
+ * @author Sina Bagherzadeh
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 29/mai/2015
  */
-final class LeafEvent extends Event implements Serializable, Cloneable {
+final class LeafEvent extends Event implements Serializable {
 
     private static final long serialVersionUID = -7441138365249091187L;
     
@@ -68,7 +69,7 @@ final class LeafEvent extends Event implements Serializable, Cloneable {
     }
 
     @Override
-    public Event normalize() {
+    Event normalize() {
         return this;
     }
 
@@ -108,11 +109,6 @@ final class LeafEvent extends Event implements Serializable, Cloneable {
     @Override
     public String toString() {
         return String.valueOf(value);
-    }
-
-    @Override
-    public Event clone() {
-        return super.clone();
     }
     
 }

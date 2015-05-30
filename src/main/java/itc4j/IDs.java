@@ -9,15 +9,15 @@ package itc4j;
  */
 final class IDs {
     
-    public static ID zero() {
+    static ID zero() {
         return new LeafID(0);
     }
     
-    public static ID one() {
+    static ID one() {
         return new LeafID(1);
     }
     
-    public static ID with(ID id1, ID id2) {
+    static ID with(ID id1, ID id2) {
         return new NonLeafID(id1, id2);
     }
 

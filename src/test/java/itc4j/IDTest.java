@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author Sina Bagherzadeh
+ * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  */
 public class IDTest {
     

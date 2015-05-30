@@ -1,12 +1,9 @@
 package itc4j;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * @author Sina Bagherzadeh
  */
-public abstract class Event implements Cloneable {
+abstract class Event {
 
     Event() {
         
@@ -34,21 +31,10 @@ public abstract class Event implements Cloneable {
 
     abstract Event sink(int m);
 
-    abstract public Event normalize();
+    abstract Event normalize();
 
     abstract boolean leq(Event other);
 
     abstract Event join(Event other);
-
-    @Override
-    public Event clone() {
-        try {
-            return (Event)super.clone();
-        }
-        catch(CloneNotSupportedException ex) {
-            Logger.getLogger(Event.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
 
 }

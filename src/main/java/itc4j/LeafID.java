@@ -5,6 +5,7 @@ import java.io.Serializable;
 /**
  * LeafID
  *
+ * @author Sina Bagherzadeh
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 28/mai/2015
  */
@@ -96,11 +97,6 @@ final class LeafID extends ID implements Serializable {
     @Override
     public String toString() {
         return String.valueOf(value);
-    }
-
-    @Override
-    protected ID clone() {
-        return super.clone();
     }
     
 }

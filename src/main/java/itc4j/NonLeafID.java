@@ -6,6 +6,7 @@ import java.util.Objects;
 /**
  * NonLeafID
  *
+ * @author Sina Bagherzadeh
  * @author Benjamim Sonntag <benjamimsonntag@gmail.com>
  * @version 28/mai/2015
  */
@@ -13,19 +14,19 @@ final class NonLeafID extends ID implements Serializable {
 
     private static final long serialVersionUID = -5030081211956985797L;
 
-    private ID left;
-    private ID right;
+    private final ID left;
+    private final ID right;
 
     NonLeafID(ID left, ID right) {
         this.left = left;
         this.right = right;
     }
 
-    public ID getLeft() {
+    ID getLeft() {
         return left;
     }
 
-    public ID getRight() {
+    ID getRight() {
         return right;
     }
 
@@ -44,17 +45,12 @@ final class NonLeafID extends ID implements Serializable {
         return false;
     }
 
-    protected boolean hasRight() {
-        return right != null;
-    }
-
-    protected boolean hasLeft() {
-        return left != null;
-    }
-
     @Override
     ID normalize() {
-        normalizeChildren();
+        return normalize(left.normalize(), right.normalize());
+    }
+
+    private static ID normalize(ID left, ID right) {
         if (left.isZero() && right.isZero()) {
             return IDs.zero();
         }
@@ -62,39 +58,22 @@ final class NonLeafID extends ID implements Serializable {
             return IDs.one();
         }
         else {
-            return this;
+            return IDs.with(left, right);
         }
-    }
-
-    private void normalizeChildren() {
-        if (hasRight()) {
-            normalizeRight();
-        }
-        if (hasLeft()) {
-            normalizeLeft();
-        }
-    }
-
-    private void normalizeRight() {
-        right = right.normalize();
-    }
-
-    private void normalizeLeft() {
-        left = left.normalize();
     }
 
     @Override
     ID[] split() {
-        if (hasLeft() && left.isZero()) {
+        if (left.isZero()) {
             return splitWithLeftZero();
         }
-        else if (hasRight() && getRight().isZero()) {
+        else if (right.isZero()) {
             return splitWithRightZero();
         }
         else {
             return new ID[] {
-                IDs.with(left.clone(), IDs.zero()),
-                IDs.with(IDs.zero(), right.clone())
+                IDs.with(left, IDs.zero()),
+                IDs.with(IDs.zero(), right)
             };
         }
     }
@@ -121,7 +100,7 @@ final class NonLeafID extends ID implements Serializable {
         if (other.isZero()) {
             return this;
         }
-        else if (other instanceof NonLeafID) {
+        else if (!other.isLeaf()) {
             return sumNonLeaf((NonLeafID)other);
         }
         else {
@@ -129,7 +108,7 @@ final class NonLeafID extends ID implements Serializable {
         }
     }
 
-    private ID sumNonLeaf(NonLeafID other) {
+    private ID sumNonLeaf(ID other) {
         ID leftSum = left.sum(other.getLeft());
         ID rightSum = right.sum(other.getRight());
         ID sum = IDs.with(leftSum, rightSum);
@@ -138,12 +117,13 @@ final class NonLeafID extends ID implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        if(!(object instanceof NonLeafID)) {
+        if (!(object instanceof NonLeafID)) {
             return false;
         }
         else {
             NonLeafID other = (NonLeafID)object;
-            return left.equals(other.getLeft()) && right.equals(other.getRight());
+            return left.equals(other.getLeft()) &&
+                   right.equals(other.getRight());
         }
     }
 
@@ -155,18 +135,6 @@ final class NonLeafID extends ID implements Serializable {
     @Override
     public String toString() {
         return "(" + left + ", " + right + ")";
-    }
-
-    @Override
-    public ID clone() {
-        NonLeafID clone = (NonLeafID)super.clone();
-        if (hasLeft()) {
-            clone.left = left.clone();
-        }
-        if (hasRight()) {
-            clone.right = right.clone();
-        }
-        return clone;
     }
     
 }
