@@ -21,7 +21,7 @@ final class Filler {
             return fillNonLeafs(id, event);
         }
     }
-    
+
     private static Event fillWithLeafID(ID leafID, Event event) {
         if (leafID.isZero()) {
             return event;
@@ -69,5 +69,5 @@ final class Filler {
     }
 
     private  Filler() { }
-    
+
 }

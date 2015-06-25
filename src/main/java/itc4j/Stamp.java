@@ -8,7 +8,7 @@ import java.io.Serializable;
 public final class Stamp implements Serializable {
 
     private static final long serialVersionUID = 1750149585711104601L;
-    
+
     private final ID id;
     private final Event event;
 

@@ -12,7 +12,7 @@ import java.io.Serializable;
 final class LeafID extends ID implements Serializable {
 
     private static final long serialVersionUID = 870626177742300327L;
-    
+
     private final int value;
 
     LeafID(int value) {
@@ -98,5 +98,5 @@ final class LeafID extends ID implements Serializable {
     public String toString() {
         return String.valueOf(value);
     }
-    
+
 }

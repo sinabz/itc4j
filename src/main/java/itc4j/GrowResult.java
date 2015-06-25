@@ -4,7 +4,7 @@ package itc4j;
  * @author Sina Bagherzadeh
  */
 final class GrowResult {
-    
+
     private final Event event;
     private int cost;
 
@@ -24,5 +24,5 @@ final class GrowResult {
     void setCost(int cost) {
         this.cost = cost;
     }
-    
+
 }

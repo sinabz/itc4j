@@ -6,7 +6,7 @@ package itc4j;
 abstract class Event {
 
     Event() {
-        
+
     }
 
     abstract int getValue();
@@ -24,7 +24,7 @@ abstract class Event {
     }
 
     protected abstract int maxDepth(int depth);
-    
+
     abstract boolean isLeaf();
 
     abstract Event lift(int m);
