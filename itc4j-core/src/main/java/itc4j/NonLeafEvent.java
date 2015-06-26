@@ -13,7 +13,7 @@ import java.util.Objects;
 final class NonLeafEvent extends Event implements Serializable {
 
     private static final long serialVersionUID = 4390279981057181340L;
-    
+
     private final int value;
     private final Event left;
     private final Event right;

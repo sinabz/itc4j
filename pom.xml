@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.googlecode.itc4j</groupId>
-    <artifactId>itc4j</artifactId>
-    <version>0.5.0</version>
-    <packaging>jar</packaging>
+    <artifactId>itc4j-parent</artifactId>
+    <version>0.6.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
     <developers>
         <developer>
@@ -23,14 +23,22 @@
         </license>
     </licenses>
 
+    <properties>
+        <jackson.version>2.5.1</jackson.version>
+        <java.major.version>1.5</java.major.version>
+        <junit.version>4.11</junit.version>
+        <maven-compiler-plugin.version>2.0.2</maven-compiler-plugin.version>
+        <maven-install-plugin.version>2.2</maven-install-plugin.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <source>${java.major.version}</source>
+                    <target>${java.major.version}</target>
                     <encoding>UTF-8</encoding>
                     <debug>true</debug>
                     <optimize>true</optimize>
@@ -38,7 +46,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>2.2</version>
+                <version>${maven-install-plugin.version}</version>
             </plugin>
         </plugins>
     </build>
@@ -46,8 +54,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <modules>
+        <module>itc4j-core</module>
+        <module>itc4j-jackson</module>
+    </modules>
 </project>

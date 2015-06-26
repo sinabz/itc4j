@@ -9,7 +9,7 @@ package itc4j;
  * @version 29/mai/2015
  */
 final class Grower {
-    
+
     static Event grow(ID id, Event event) {
         return innerGrow(id, event).getEvent();
     }
@@ -22,7 +22,7 @@ final class Grower {
             return growNonLeafID(id, event);
         }
     }
-    
+
     private static GrowResult growLeafID(ID id, Event event) {
         if (id.isOne() && event.isLeaf()) {
             return new GrowResult(Events.with(event.getValue() + 1), 0);
@@ -31,7 +31,7 @@ final class Grower {
             throw new IllegalArgumentException("Illegal arguments: " + id + " and " + event);
         }
     }
-    
+
     private static GrowResult growNonLeafID(ID id, Event event) {
         if (event.isLeaf()) {
             return growLeafEvent(id, event);
@@ -95,5 +95,5 @@ final class Grower {
     }
 
     private Grower() { }
-    
+
 }

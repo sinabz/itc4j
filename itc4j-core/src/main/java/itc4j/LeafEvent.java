@@ -12,7 +12,7 @@ import java.io.Serializable;
 final class LeafEvent extends Event implements Serializable {
 
     private static final long serialVersionUID = -7441138365249091187L;
-    
+
     private final int value;
 
     LeafEvent() {
@@ -110,5 +110,5 @@ final class LeafEvent extends Event implements Serializable {
     public String toString() {
         return String.valueOf(value);
     }
-    
+
 }
