@@ -19,6 +19,10 @@ final class LeafID extends ID implements Serializable {
         this.value = value;
     }
 
+    int getValue() {
+      return this.value;
+    }
+
     @Override
     ID getLeft() {
         return null;
