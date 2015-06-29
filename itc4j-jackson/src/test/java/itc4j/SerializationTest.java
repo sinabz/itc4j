@@ -17,7 +17,6 @@ public class SerializationTest {
   }
 
   @Test
-  @org.junit.Ignore
   public void testSimpleSerialzation() throws Exception {
     final Stamp s = new Stamp();
     final String js = json.writeValueAsString(s);
