@@ -24,7 +24,13 @@ public class StampDeserializer extends StdDeserializer<Stamp>
     JsonToken t = jp.getCurrentToken();
     assert t == JsonToken.START_ARRAY;
 
-    return new Stamp(handleID(jp, ctxt), handleEvent(jp, ctxt));
+    final Stamp s = new Stamp(handleID(jp, ctxt), handleEvent(jp, ctxt));
+
+    // Discard the END_ARRAY token
+    t = jp.nextToken();
+    assert t == JsonToken.END_ARRAY;
+
+    return s;
   }
 
   /**
