@@ -34,4 +34,14 @@ public class SerializationTest {
     final Stamp ns = json.readValue(js, Stamp.class);
     assertEquals(s, ns);
   }
+
+  @Test
+  public void testMemberSerialization() throws Exception {
+    final ContainsStamp inp = new ContainsStamp(new Stamp(), "test");
+    final String ser = json.writeValueAsString(inp);
+
+    final ContainsStamp out = json.readValue(ser, ContainsStamp.class);
+    assertEquals(inp.getClock(), out.getClock());
+    assertEquals(inp.getFoo(), out.getFoo());
+  }
 }
