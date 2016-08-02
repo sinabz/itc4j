@@ -6,3 +6,5 @@
 *.ear
 /itc4j-core/target/
 /itc4j-jackson/target/
+.idea/
+*.iml
