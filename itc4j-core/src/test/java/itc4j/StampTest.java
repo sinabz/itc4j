@@ -118,7 +118,9 @@ public class StampTest {
         Stamp s1 = new Stamp();
         Stamp s2 = new Stamp();
         Assert.assertTrue(s1.leq(s2.event()));
+        Assert.assertTrue(Causality.lessThanEquals(s1, s2.event()));
         Assert.assertFalse(s2.event().leq(s1));
+        Assert.assertFalse(Causality.lessThanEquals(s2.event(), s1));
     }
 
     private static void assertIntEquals(int expected, int actual) {
