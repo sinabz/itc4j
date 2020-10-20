@@ -30,7 +30,7 @@
     <properties>
         <jackson.version>2.5.1</jackson.version>
         <java.major.version>1.5</java.major.version>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.13.1</junit.version>
         <maven-compiler-plugin.version>2.0.2</maven-compiler-plugin.version>
         <maven-install-plugin.version>2.2</maven-install-plugin.version>
     </properties>
